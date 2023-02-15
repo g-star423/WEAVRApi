@@ -13,6 +13,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const Pattern = require('./models/patternSchema.js')
 const { create } = require('./models/patternSchema.js');
+const { default: axios } = require('axios');
 
 /////////////////
 // Middleware
@@ -33,9 +34,30 @@ app.use(cors());
 
 app.post('/newpattern', (req, res) => {
     // console.log(req.body)
-    Pattern.create(req.body, (error, createdPattern) => {
-        res.json(createdPattern)
+    console.log(req.ip)
+
+    axios.get('http://ip-api.com/json/' + req.ip).then((response) => {
+        if (response.data.city) {
+            req.body.city = response.data.city
+        }
+        if (response.data.country) {
+            req.body.country = response.data.country
+        }
+        if (response.data.regionName) {
+            req.body.region = response.data.regionName
+        }
+        Pattern.create(req.body, (error, createdPattern) => {
+            res.json(createdPattern)
+        })
+    }
+    ).catch((error) => {
+        console.log(error)
+        Pattern.create(req.body, (error, createdPattern) => {
+            res.json(createdPattern)
+        })
     })
+
+
 })
 
 // app.get('/getpatterns', (req, res) => { // 30 random patterns
@@ -49,7 +71,7 @@ app.post('/newpattern', (req, res) => {
 // })
 
 app.get('/getpatterns', (req, res) => { // 30 random patterns
-    const requestSize = req.body.size
+
     Pattern.find({}).sort({ updatedAt: -1 }).limit(30).exec((error, foundPatterns) => {
         if (error) {
             console.log(error)
