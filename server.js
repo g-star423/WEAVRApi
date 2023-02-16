@@ -34,9 +34,9 @@ app.use(cors());
 
 app.post('/newpattern', (req, res) => {
     // console.log(req.body)
-    console.log(req.ip)
+    console.log(req.ips[0])
 
-    axios.get('http://ip-api.com/json/' + req.ip).then((response) => {
+    axios.get('http://ip-api.com/json/' + req.ips[0]).then((response) => {
         if (response.data.city) {
             req.body.city = response.data.city
         }
