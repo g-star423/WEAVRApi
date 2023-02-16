@@ -6,6 +6,8 @@ const methodOverride = require('method-override');
 
 const cors = require('cors');
 
+app.enable('trust proxy') // should allow geotagging to work??
+
 /////////////////
 // Mongoose
 /////////////////
